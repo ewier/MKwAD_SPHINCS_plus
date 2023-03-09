@@ -1,2 +1,2 @@
-# MKwAD_SPHINCS_plus
-Project for MKwAD, 2023
+# Repozytorium na przedmiot MKwAD
+laboratoria oraz projekt
