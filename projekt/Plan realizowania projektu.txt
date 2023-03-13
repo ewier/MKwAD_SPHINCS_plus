@@ -1,0 +1,12 @@
+Etapy realizowania projektu
+
+0. (27.02) 
+1. Wybór tematu oraz stworzenie planu realizacji (13.03)
+2. Analiza dokumentacji (27.03)
+3. Implementacja funkcji pomocniczych (10.04)
+4. kontynuacja implementacji (implementacja funkcji szyfrującej), realizacja zakończona przedstawieniem dotychczasowej pracy podczas konsultacji (24.04)
+5. debugging oraz implementacja funkcji testujących implementację (8.05)
+6. niezbędne korekty (22.05)
+7. przedstawienie projektu na zajęciach (5.06)
+
+
