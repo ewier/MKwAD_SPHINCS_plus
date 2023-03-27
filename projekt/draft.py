@@ -9,7 +9,7 @@ SPHINCS+ steps:
     to a secure random number generator. Next we have to generate the top tree. For the leaves
     we need to do 2^(h/d) WOTS+ key generations (len calls to PRF for generating the sk and
     wlen calls to F for the pk) and we have to compress the WOTS+ public key (one call to Tlen).
-    Computing the root of the top tree requires (2h/d - 1) calls to H.
+    Computing the root of the top tree requires (2^(h/d) - 1) calls to H.
 
     Signing:
     For randomization and message compression we need one call to PRFmsg, and one
