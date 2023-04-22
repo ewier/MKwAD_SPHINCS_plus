@@ -1,16 +1,17 @@
-'''
+"""
 SPHINCS+ implementation
 
-'''
+"""
 from utils import *
 from math import floor, ceil, log
 
-class Sphincs():
-    '''
+
+class Sphincs:
+    """
     n : the security parameter in bytes.
-    w : the Winternitz parameter 
+    w : the Winternitz parameter
     h : the height of the hypertree
-    d : the number of layers in the hypertree 
+    d : the number of layers in the hypertree
     k : the number of trees in FORS
     t : the number of leaves of a FORS
 
@@ -21,11 +22,11 @@ class Sphincs():
 
     n: it is the message length as well as the length of a private key, public key, or signature element in bytes.
     w: it is an element of the set {4, 16, 256}
-    
-    '''
 
-    def __init__(self, n, w, h, d, k, t, randomise = True):
-        self.n = n # 
+    """
+
+    def __init__(self, n, w, h, d, k, t, randomise=True):
+        self.n = n  #
         self.w = w
         self.h = h
         self.d = d
@@ -34,22 +35,21 @@ class Sphincs():
         self.RANDOMISE = randomise
 
     def spx_keygen(self):
-        '''
+        """
         returns a SPHINCS+ key pair (SK,PK)
 
-        '''
+        """
         SK_seed = sec_rand(self.n)
         SK_prf = sec_rand(self.n)
         PK_seed = sec_rand(self.n)
-        PK_root = ht_PKgen(SK_seed, PK_seed);
-        return ( (SK_seed, SK_prf, PK_seed, PK_root), (PK_seed, PK_root) )
-
+        PK_root = ht_PKgen(SK_seed, PK_seed)
+        return ((SK_seed, SK_prf, PK_seed, PK_root), (PK_seed, PK_root))
 
     # def spx_sign(self, M, SK):
     #     '''
     #     returns a SPHINCS+ signature SIG
 
-    #     M : message 
+    #     M : message
     #     SK : private key, SK = (SK.seed, SK.prf, PK.seed, PK.root)
 
     #     '''
@@ -71,7 +71,7 @@ class Sphincs():
     #     md = md[:ka] # first ka bits of tmp_md
     #     idx_tree = tmp_idx_tree[:(h - h/d)] # first h - h/d bits of tmp_idx_tree
     #     idx_leaf = tmp_idx_leaf[:(h/d)] # first h/d bits of tmp_idx_leaf
-        
+
     #     # FORS sign
     #     ADRS.setLayerAddress(0)
     #     ADRS.setTreeAddress(idx_tree)
@@ -79,24 +79,23 @@ class Sphincs():
     #     ADRS.setKeyPairAddress(idx_leaf)
     #     SIG_FORS = fors_sign(md, SK.seed, PK_seed, ADRS)
     #     SIG = SIG || SIG_FORS
-        
+
     #     # get FORS public key
     #     PK_FORS = fors_pkFromSig(SIG_FORS, M, PK_seed, ADRS)
-        
+
     #     # sign FORS public key with HT
     #     ADRS.setType(TREE)
     #     SIG_HT = ht_sign(PK_FORS, SK_seed, PK_seed, idx_tree, idx_leaf)
     #     SIG = SIG || SIG_HT
     #     return SIG
 
-
     # def spx_verify(self, M, SIG, PK):
     #     '''
     #     returns boolean value that denotes the verification of the given signature
 
-    #     M : message 
+    #     M : message
     #     SIG : signature
-    #     PK : public key 
+    #     PK : public key
     #     '''
     #     PK_seed, PK_root = PK
 
@@ -105,7 +104,7 @@ class Sphincs():
     #     R = SIG.getR();
     #     SIG_FORS = SIG.getSIG_FORS();
     #     SIG_HT = SIG.getSIG_HT();
-        
+
     #     # compute message digest and index
     #     digest = H_msg(R, PK_seed, PK_root, M);
     #     lengths = [floor((ka +7)/ 8), floor((h - h/d +7)/ 8), floor((h/d +7)/ 8)]
@@ -120,13 +119,7 @@ class Sphincs():
     #     ADRS.setType(FORS_TREE);
     #     ADRS.setKeyPairAddress(idx_leaf);
     #     PK_FORS = fors_pkFromSig(SIG_FORS, md, PK_seed, ADRS);
-        
+
     #     # verify HT signature
     #     ADRS.setType(TREE);
     #     return ht_verify(PK_FORS, SIG_HT, PK_seed, idx_tree, idx_leaf, PK_root);
-
-
-
-    
-
-    
