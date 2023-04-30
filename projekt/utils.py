@@ -84,9 +84,12 @@ def sec_rand(x):
     return convert_to_int(generate_seed(x))
 
 
-def ht_PKgen(x):
-    # to implement
-    pass
+def ht_PKgen(SK_seed, PK_seed):
+    adrs = toByte(0, 32);
+    setLayerAddress(adrs, d-1);
+    setTreeAddress(adrs, 0);
+    root = xmss_PKgen(SK_seed, PK_seed, adrs);
+    return root;
 
 
 def extract_bytes(H, lengths):

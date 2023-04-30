@@ -4,6 +4,7 @@ SPHINCS+ implementation
 """
 from utils import *
 from math import floor, ceil, log
+from constants import *
 
 
 class Sphincs:
@@ -25,13 +26,13 @@ class Sphincs:
 
     """
 
-    def __init__(self, n, w, h, d, k, t, randomise=True):
-        self.n = n  #
-        self.w = w
-        self.h = h
-        self.d = d
-        self.k = k
-        self.t = t
+    def __init__(self, randomise=True):
+        self.n = SECURITY_PARAM
+        self.w = WINTERNITZ_PARAM
+        self.h = HYPERTREE_HEIGHT
+        self.d = HYPERTREE_LAYERS
+        self.k = FORS_TREES
+        self.t = FORS_LEAVES
         self.RANDOMISE = randomise
 
     def spx_keygen(self):
