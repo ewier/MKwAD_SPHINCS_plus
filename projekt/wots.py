@@ -1,5 +1,8 @@
-from math import ceil, floor, log2 as log
+from utils import *
 from numpy import copy
+from Crypto.Hash import SHA256 as sha
+from constants import *
+from hash import *
 
 
 class wots:
@@ -16,9 +19,10 @@ class wots:
 
     """
 
-    def __init__(self, n, w):
-        self.n = n
-        self.w = self.setup()
+    def __init__(self):
+        self.n = SECURITY_PARAM
+        self.w = WINTERNITZ_PARAM
+        self.setup()
 
     def setup(self):
         self.len1 = ceil(8 * self.n / log(self.w))
@@ -27,11 +31,11 @@ class wots:
 
     def chain(self, X, i, s, PK_seed, ADRS):
         '''
-        #Input: 
+        Input: 
             Input string X, 
             start index i, 
             number of steps s, 
-            public seed PK.seed,
+            public seed PK_seed,
             address ADRS
 
         #Output: 
