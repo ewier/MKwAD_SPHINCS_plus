@@ -5,6 +5,7 @@ Utility functions for sphincs+
 
 from os import urandom
 from math import ceil, floor, log2 as log
+from adrs import ADDRESS
 
 
 def trunc_int(x, l, base=2):
@@ -33,11 +34,35 @@ def toByte(x, y=None):
         y = ceil(x.bit_length() / 8)
     return x.to_bytes(y, byteorder="big")
 
-# def fromByte(x):
-#     return int.from_bytes(x, byteorder='big')
+def toArray(num):
+    A = []
+    base = 2**8
+    while(num > 0):
+        A.append(num%base)
+        num = (num-A[-1])//base
+    A.reverse()
+    return A
+
+def to_stream(A):
+    num = 0
+    for i in range(8):
+        num = num + (256**i) * A[i]
+    return num
+
+
+def verify_type(y):
+    if(type(y) == list):
+        y = concatenate(y[0], y[1:]) if len(y) > 1 else y[0]
+    if(type(y) == ADDRESS):
+        y = to_stream(y.get())
+    if(type(y) == str):
+        y = ord(y)
+    return y
 
 
 def concatenate(x, y, base=32):
+    x = verify_type(x)
+    y = verify_type(y)
     res = (x<<base) | (y)
     return res
 
@@ -54,7 +79,7 @@ def base_w(X, w, out_len):
             total = X[in_val]
             in_val += 1
             bits += 8
-        bits -= log(w)
+        bits -= int(log(w))
         basew.append( (total >> bits) and (w - 1) )
     return basew
 
@@ -93,5 +118,10 @@ def ht_PKgen(SK_seed, PK_seed):
 
 
 def extract_bytes(H, lengths):
+    # to implement
+    pass
+
+
+def T_len(PK_seed, wotspkADRS, tmp):
     # to implement
     pass

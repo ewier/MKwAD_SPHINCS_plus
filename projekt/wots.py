@@ -1,11 +1,11 @@
 from utils import *
-from numpy import copy
 from Crypto.Hash import SHA256 as sha
 from constants import *
 from hash import *
+from adrs import *
 
 
-class wots:
+class WOTS:
     """
 
     Parameters:
@@ -43,7 +43,7 @@ class wots:
 
         '''
         if s == 0: return X
-        if ((i + s) > (self.w - 1) ): return None
+        if (i + s) > (self.w - 1): return None
         tmp = self.chain(X, i, s - 1, PK_seed, ADRS);
         ADRS.setHashAddress(i + s - 1);
         tmp = F(PK_seed, ADRS, tmp);
@@ -62,7 +62,7 @@ class wots:
         for i in range(self.n):
             ADRS.setChainAddress(i)
             ADRS.setHashAddress(0)
-            sk = []
+            # sk = []
             sk.append(PRF(SK_seed, ADRS))
         return sk
     
@@ -76,20 +76,21 @@ class wots:
         Output: 
             WOTS+ public key pk
         '''
-        wotspkADRS = copy(ADRS)
+        wotspkADRS = ADDRESS()
+        wotspkADRS.copy(ADRS)
         tmp = []
         for i in range(self.len):
             ADRS.setChainAddress(i)
             ADRS.setHashAddress(0)
-            sk = PRF(SK_seed, ADRS)
-            tmp.append(self.chain(sk[i], 0, self.w - 1, PK_seed, ADRS))
-        wotspkADRS.setType(WOTS_PK)
+            sk_i = PRF(SK_seed, ADRS)
+            tmp.append(self.chain(sk_i, 0, self.w - 1, PK_seed, ADRS))
+        wotspkADRS.setType(t_ADRS.WOTS_PK)
         wotspkADRS.setKeyPairAddress(ADRS.getKeyPairAddress())
         pk = T_len(PK_seed, wotspkADRS, tmp)
         return pk
     
     #Input: Message M, secret seed SK.seed, public seed PK.seed, address ADRS
-#Output: WOTS+ signature sig
+    #Output: WOTS+ signature sig
     def wots_sign(self, M, SK_seed, PK_seed, ADRS):
         csum = 0
 
@@ -102,20 +103,21 @@ class wots:
         
         # convert csum to base w
         if( (log(self.w) % 8) != 0):
-            csum = csum << ( 8 - ( ( self.len2 * log(self.w) ) % 8 ));  
+            csum = csum << int( 8 - ( ( self.len2 * log(self.w) ) % 8 ));  
         
         len_2_bytes = ceil( ( self.len2 * log(self.w) ) / 8 );
         msg = concatenate( msg, base_w(toByte(csum, len_2_bytes), self.w, self.len2) )
+        msg = toArray(msg)
         sig = []
         for i in range(self.len):
             ADRS.setChainAddress(i)
             ADRS.setHashAddress(0)
             sk = PRF(SK_seed, ADRS)
-            sig.append(chain(sk, 0, msg[i], PK_seed, ADRS))
+            sig.append(self.chain(sk, 0, msg[i], PK_seed, ADRS))
         return sig
 
-#Input: Message M, WOTS+ signature sig, address ADRS, public seed PK.seed
-#Output: WOTS+ public key pk_sig derived from sig
+    #Input: Message M, WOTS+ signature sig, address ADRS, public seed PK.seed
+    #Output: WOTS+ public key pk_sig derived from sig
     def wots_pkFromSig(self, sig, M, PK_seed, ADRS):
         csum = 0;
         wotspkADRS = ADRS;
@@ -126,15 +128,15 @@ class wots:
         for i in range(self.len1):
             csum = csum + self.w - 1 - msg[i]
 
-        csum = csum << ( 8 - ( ( self.len2 * log(self.w) ) % 8 ))
+        csum = csum << int( 8 - ( ( self.len2 * log(self.w) ) % 8 ))
         len_2_bytes = ceil( ( self.len2 * log(self.w) ) / 8 )
         msg = concatenate(msg, base_w(toByte(csum, len_2_bytes), self.w, self.len2))
+        msg = toArray(msg)
         tmp = []
         for i in range(self.len):
             ADRS.setChainAddress(i)
-            tmp.append(chain(sig[i], msg[i], self.w - 1 - msg[i], PK_seed, ADRS))
-
-        wotspkADRS.setType(WOTS_PK);
+            tmp.append(self.chain(sig[i], msg[i], self.w - 1 - msg[i], PK_seed, ADRS))
+        wotspkADRS.setType(t_ADRS.WOTS_PK);
         wotspkADRS.setKeyPairAddress(ADRS.getKeyPairAddress())
         pk_sig = T_len(PK_seed, wotspkADRS, tmp)
         return pk_sig

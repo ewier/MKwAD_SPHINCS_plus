@@ -33,7 +33,7 @@ class Sphincs:
         self.d = HYPERTREE_LAYERS
         self.k = FORS_TREES
         self.t = FORS_LEAVES
-        self.RANDOMISE = randomise
+        self.randomise = randomise
 
     def spx_keygen(self):
         """
