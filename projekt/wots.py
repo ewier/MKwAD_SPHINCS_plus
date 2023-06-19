@@ -86,7 +86,7 @@ class WOTS:
             tmp.append(self.chain(sk_i, 0, self.w - 1, PK_seed, ADRS))
         wotspkADRS.setType(t_ADRS.WOTS_PK)
         wotspkADRS.setKeyPairAddress(ADRS.getKeyPairAddress())
-        pk = T_len(PK_seed, wotspkADRS, tmp)
+        pk = T_l(PK_seed, wotspkADRS, tmp)
         return pk
     
     #Input: Message M, secret seed SK.seed, public seed PK.seed, address ADRS
@@ -138,7 +138,7 @@ class WOTS:
             tmp.append(self.chain(sig[i], msg[i], self.w - 1 - msg[i], PK_seed, ADRS))
         wotspkADRS.setType(t_ADRS.WOTS_PK);
         wotspkADRS.setKeyPairAddress(ADRS.getKeyPairAddress())
-        pk_sig = T_len(PK_seed, wotspkADRS, tmp)
+        pk_sig = T_l(PK_seed, wotspkADRS, tmp)
         return pk_sig
     
 

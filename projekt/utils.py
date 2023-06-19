@@ -109,19 +109,25 @@ def sec_rand(x):
     return convert_to_int(generate_seed(x))
 
 
-def ht_PKgen(SK_seed, PK_seed):
-    adrs = toByte(0, 32);
-    setLayerAddress(adrs, d-1);
-    setTreeAddress(adrs, 0);
-    root = xmss_PKgen(SK_seed, PK_seed, adrs);
-    return root;
-
-
 def extract_bytes(H, lengths):
     # to implement
-    pass
+    lengths = reversed(lengths)
+    chunks = []
+    for len in lengths:
+        c = get_n_bin_digits(H, len)
+        chunks.append(c)
+        H -= c
+    assert H == 0
+    return chunks
 
 
-def T_len(PK_seed, wotspkADRS, tmp):
-    # to implement
-    pass
+def get_n_bin_digits(num, n=1): # liczba złożona z n ostatnich bitów num
+    mask = (1 << n) - 1
+    if(type(num) is bytes):
+        num = int.from_bytes(num, 'big')
+    return  num & mask
+
+def get_n_first_bin_digits(num, n=1):
+    rev_n = ceil(log(num)) - n
+    diff = get_n_bin_digits(num, rev_n)
+    return num - diff

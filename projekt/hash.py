@@ -31,7 +31,7 @@ def H_msg(R, PK_seed, PK_root, M):
     return shake256(c, 8*m)
 
 def PRF(seed, adrs):
-    c = concatenate( seed, adrs)
+    c = concatenate(seed, adrs)
     return shake256(c, 8*n)
 
 def PRF_msg(SK_prf, OptRand, M):

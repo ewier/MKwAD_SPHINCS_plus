@@ -35,7 +35,15 @@ class ADDRESS:
     address type  - 1 word -  set to 0 for a WOTS+ hash address, to 1 for the compression of the WOTS+ public key, to 2 for a hash tree address, to 3 for a FORS address, and to 4 for the compression of FORS tree roots
     key pair addres - 1 word - 
     chain address - 1 word - 
-    hash address
+    hash address - 1 word - 
+
+    WOTS: 
+        layer address,
+        tree address (3), 
+        type = 0 
+        key pair address 
+        chain address 
+        hash address
 
 
     """
@@ -57,8 +65,14 @@ class ADDRESS:
     def setKeyPairAddress(self, val):
         self.adrs[5] = val
 
+    def setTreeHeight(self, val):
+        self.adrs[6] = val
+
     def get(self):
         return self.adrs
 
     def getKeyPairAddress(self):
         return self.adrs[5]
+
+    def getTreeHeight(self):
+        return self.adrs[6]
