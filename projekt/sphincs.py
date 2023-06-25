@@ -23,11 +23,6 @@ class Sphincs:
     m: the message digest length in bytes
     len: the number of n-byte string elements in a WOTS+ private key, public key, and signature.
 
-    VALUES:
-
-    n: it is the message length as well as the length of a private key, public key, or signature element in bytes.
-    w: it is an element of the set {4, 16, 256}
-
     """
 
     def __init__(self, randomise=True):
@@ -57,28 +52,28 @@ class Sphincs:
         returns a SPHINCS+ signature SIG
 
         M : message
-        SK : private key, SK = (SK.seed, SK.prf, PK.seed, PK.root)
+        SK : private key, SK = (SK_seed, SK.prf, PK_seed, PK.root)
 
         '''
         SK_seed, SK_prf, PK_seed, PK_root = SK
 
-        # init
-        ADRS = toByte(0, 32)
+        ADRS = ADDRESS()
         # generate randomizer
         opt = toByte(0, self.n)
         if self.RANDOMIZE:
             opt = sec_rand(self.n)
         R = PRF_msg(SK_prf, opt, M)
-        SIG = concatenate(SIG, R)
+        # SIG = concatenate(SIG, R)
+        SIG = R
 
         # compute message digest and index
         digest = H_msg(R, PK_seed, PK_root, M)
         ka = self.k * log2(self.t)
         lengths = [floor((ka +7)/ 8), floor((self.h - self.h/self.d + 7)/ 8), floor((self.h/self.d + 7)/ 8)]
         tmp_md, tmp_idx_tree, tmp_idx_leaf = extract_bytes(digest, lengths)
-        md = md[:ka] # first ka bits of tmp_md
-        idx_tree = tmp_idx_tree[:(self.h - self.h/self.d)] # first h - h/d bits of tmp_idx_tree
-        idx_leaf = tmp_idx_leaf[:(self.h/self.d)] # first h/d bits of tmp_idx_leaf
+        md = get_n_first_bin_digits(tmp_md, ka)  # first ka bits of tmp_md
+        idx_tree = get_n_first_bin_digits(tmp_idx_tree, (self.h - self.h/self.d))  # first h - h/d bits of tmp_idx_tree
+        idx_leaf = get_n_first_bin_digits(tmp_idx_leaf, (self.h/self.d))  # first h/d bits of tmp_idx_leaf
 
         # FORS sign
         ADRS.setLayerAddress(0)
@@ -108,14 +103,14 @@ class Sphincs:
         PK_seed, PK_root = PK
 
         # init
-        ADRS = toByte(0, 32);
-        R = SIG.getR();
-        SIG_FORS = SIG.getSIG_FORS();
-        SIG_HT = SIG.getSIG_HT();
+        ADRS = ADDRESS()
+        R = SIG.getR()
+        SIG_FORS = SIG.getSIG_FORS()
+        SIG_HT = SIG.getSIG_HT()
 
         # compute message digest and index
         ka = self.k * log2(self.t)
-        digest = H_msg(R, PK_seed, PK_root, M);
+        digest = H_msg(R, PK_seed, PK_root, M)
         lengths = [floor((ka +7)/ 8), floor((self.h - self.h/self.d +7)/ 8), floor((self.h/self.d +7)/ 8)]
         tmp_md, tmp_idx_tree, tmp_idx_leaf = extract_bytes(digest, lengths)
         md = md[:ka] # first ka bits of tmp_md
@@ -123,12 +118,12 @@ class Sphincs:
         idx_leaf = tmp_idx_leaf[:(self.h/self.d)] # first h/d bits of tmp_idx_leaf
 
         # compute FORS public key
-        ADRS.setLayerAddress(0);
-        ADRS.setTreeAddress(idx_tree);
-        ADRS.setType(t_ADRS.FORS_TREE);
-        ADRS.setKeyPairAddress(idx_leaf);
-        PK_FORS = self.FORS.fors_pkFromSig(SIG_FORS, md, PK_seed, ADRS);
+        ADRS.setLayerAddress(0)
+        ADRS.setTreeAddress(idx_tree)
+        ADRS.setType(t_ADRS.FORS_TREE)
+        ADRS.setKeyPairAddress(idx_leaf)
+        PK_FORS = self.FORS.fors_pkFromSig(SIG_FORS, md, PK_seed, ADRS)
 
         # verify HT signature
-        ADRS.setType(t_ADRS.TREE);
-        return self.FORS.ht_verify(PK_FORS, SIG_HT, PK_seed, idx_tree, idx_leaf, PK_root);
+        ADRS.setType(t_ADRS.TREE)
+        return self.FORS.ht_verify(PK_FORS, SIG_HT, PK_seed, idx_tree, idx_leaf, PK_root)

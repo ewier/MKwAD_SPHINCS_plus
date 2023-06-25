@@ -6,7 +6,23 @@ Utility functions for sphincs+
 from os import urandom
 from math import ceil, floor, log2 as log
 from adrs import ADDRESS
+from enum import Enum
 
+class t_ADRS(Enum):
+    """
+    ADRS types:
+     - for the hashes in WOTS+ schemes, 
+     - for compression of the WOTS+ public key, 
+     - for hashes within the main Merkle tree construction, 
+     - for the hashes in the Merkle tree in FORS, 
+     - the compression of the tree roots of FORS
+     
+    """
+    WOTS_HASH = 0
+    WOTS_PK = 1
+    TREE = 2
+    FORS_TREE = 3
+    FORS_ROOTS = 4
 
 def trunc_int(x, l, base=2):
     '''
@@ -34,6 +50,7 @@ def toByte(x, y=None):
         y = ceil(x.bit_length() / 8)
     return x.to_bytes(y, byteorder="big")
 
+
 def toArray(num):
     A = []
     base = 2**8
@@ -42,6 +59,7 @@ def toArray(num):
         num = (num-A[-1])//base
     A.reverse()
     return A
+
 
 def to_stream(A):
     num = 0
@@ -110,24 +128,34 @@ def sec_rand(x):
 
 
 def extract_bytes(H, lengths):
-    # to implement
-    lengths = reversed(lengths)
+    len = ceil(log(H))
     chunks = []
-    for len in lengths:
+    for val in lengths:
+        len = len - val
         c = get_n_bin_digits(H, len)
-        chunks.append(c)
-        H -= c
-    assert H == 0
+        chunks.append((H - c) >> len)
+        H = c
     return chunks
 
 
-def get_n_bin_digits(num, n=1): # liczba złożona z n ostatnich bitów num
+def get_n_bin_digits(num, n=1):
+    if(type(n) is float):
+        n = int(n)
+    if(ceil(log(num)) < n):
+        return num
     mask = (1 << n) - 1
     if(type(num) is bytes):
         num = int.from_bytes(num, 'big')
     return  num & mask
 
 def get_n_first_bin_digits(num, n=1):
-    rev_n = ceil(log(num)) - n
-    diff = get_n_bin_digits(num, rev_n)
-    return num - diff
+    if(type(n) is float):
+        n  = int(n)
+    if(num == 0):
+        return 0
+    l = ceil(log(num))
+    if(l < n):
+        return num
+    mask = ((1 << n) - 1) << (l - n)
+    x = (num & mask) >> (l - n)
+    return x
