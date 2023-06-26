@@ -140,3 +140,7 @@ class Fors():
         pk = T(PK_seed, forspkADRS, root)
         return pk
 
+
+    def getSK(self, SIG_FORS, i):
+        # k elementów SK | ADRS
+        pass

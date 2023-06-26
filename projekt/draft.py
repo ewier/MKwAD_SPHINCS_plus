@@ -5,7 +5,7 @@ SPHINCS+ implementation
 SPHINCS+ steps:
 
     Key Generation:
-    Generating the SPHINCS+ private key and PK.seed requires three calls
+    Generating the SPHINCS+ private key and PK_seed requires three calls
     to a secure random number generator. Next we have to generate the top tree. For the leaves
     we need to do 2^(h/d) WOTS+ key generations (len calls to PRF for generating the sk and
     wlen calls to F for the pk) and we have to compress the WOTS+ public key (one call to Tlen).
@@ -89,7 +89,7 @@ class Sphincs():
         returns a SPHINCS+ signature SIG
 
         M : message 
-        SK : private key, SK = (SK.seed, SK.prf, PK.seed, PK.root)
+        SK : private key, SK = (SK_seed, SK.prf, PK_seed, PK.root)
 
         '''
         pass
@@ -107,46 +107,46 @@ class Sphincs():
     # 
     # WOTS+
 
-    def chain(X, i, s, PK.seed, ADRS):
+    def chain(X, i, s, PK_seed, ADRS):
         '''
         returns value of F iterated s times on X
 
         X : Input string,
         i :  start index, 
         s : number of steps,
-        PK.seed : public seed,
+        PK_seed : public seed,
         ADRS : address
 
         '''
         pass
 
-    def wots_PKgen(SK.seed, PK.seed, ADRS):
+    def wots_PKgen(SK_seed, PK_seed, ADRS):
         '''
         returns WOTS+ public key pk
 
-        SK.seed : secret seed,
-        PK.seed : public seed,
+        SK_seed : secret seed,
+        PK_seed : public seed,
         ADRS : address
         '''
         pass
 
-    def wots_sign(M, SK.seed, PK.seed, ADRS):
+    def wots_sign(M, SK_seed, PK_seed, ADRS):
         '''
         returns  WOTS+ signature sig
 
         M : message,
-        SK.seed : secret seed,
-        PK.seed : public seed,
+        SK_seed : secret seed,
+        PK_seed : public seed,
         ADRS : address
         '''
         pass
 
-    def wots_pkFromSig(sig, M, PK.seed, ADRS):
+    def wots_pkFromSig(sig, M, PK_seed, ADRS):
         '''
         returns WOTS+ public key pk_sig derived from sig
 
         sig : WOTS+ signature,
-        PK.seed : public seed,
+        PK_seed : public seed,
         ADRS : address
 
         

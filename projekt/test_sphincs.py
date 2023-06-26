@@ -5,13 +5,9 @@ from adrs import *
 
 class TestSphincs:
     def __init__(self, args=None):
-        self.sphincs = Sphincs()
-
-    def test_key_gen(self):
-        SK, PK = self.sphincs.spx_keygen()
-        return 1
+        self.spx = Sphincs()
     
-    def test_wots(self):
+    def run_wots(self):
         M = 'Ala ma kota'
         M = M.encode("utf-8")
         print(f"M = {M}")
@@ -28,6 +24,17 @@ class TestSphincs:
         print("Step 5: PK_SIG gen")
         pk_sig = wots.wots_pkFromSig(sig, M, PK_seed, adrs)
 
+    def run_sphincs(self):
+        SK, PK = self.spx.spx_keygen()
+        M = 'Ala ma kota'
+        M = int.from_bytes(M.encode("utf-8"), byteorder='big')
+        print(f"M = {M}")
+        print("Step 1: Sphincs sign")
+        SIG = self.spx.spx_sign(M, SK)
+        print("Step 3: Sphincs verify")
+        v = self.spx.spx_verify(M, SIG, PK)
+        print(f"RESULT: {v}")
+
     def test_shake(self):
         M = 'Ala ma kota'
         M = M.encode("utf-8")
@@ -36,6 +43,6 @@ class TestSphincs:
 
 if __name__ == "__main__":
     T = TestSphincs()
-    # print(T.test_key_gen())
-    T. test_wots()
-    # T.test_shake()
+    # T. run_wots()
+    T.run_sphincs()
+    print("TEST COMPLETE")
